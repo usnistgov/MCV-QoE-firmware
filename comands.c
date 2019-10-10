@@ -18,51 +18,109 @@
 int ptt_Cmd(int argc,char *argv[]){
     float delay;
     char *eptr;
+    const char *state_str;
+    long tmp;
+    int num=PTT_PIN1;
+    int option_arg=1;
+    enum PTT_SIGNAL ptt_sig;
+    enum PTT_STATE state;
+    int i;
     if(argc==0){
-        //print out status
-        printf("PTT status : %s\r\n",ptt_get()?"on":"off");
+        //print number of PTTs for matlab usage
+        printf("%i PTT outputs:\r\n",NUM_PTT);
+
+        for(i=0;i<NUM_PTT;i++){
+            //print out status for all
+            printf("PTT%i status : %s\r\n",i+1,ptt_get(i)?"on":"off");
+        }
     }else{
-        if(!strcmp("on",argv[1])){
+        //attempt to parse the first argument as a number
+        tmp=strtol(argv[option_arg],&eptr,10);
+        //check if a number was found
+        if(eptr!=argv[option_arg] && *eptr=='\0'){
+            if(tmp>NUM_PTT || tmp<=PTT_PIN1){
+                printf("Error : invalid PTT number\r\n");
+                return 5;
+            }
+            //set PTT number
+            num=tmp-1;
+            //look at the next argument
+            option_arg++;
+            //check if there are any other arguments
+            if(option_arg>argc){
+                //print out status for PTT
+                printf("PTT%i status : %s\r\n",num+1,ptt_get(num)?"on":"off");
+                //done, return
+                return 0;
+            }
+        }
+        if(!strcmp("on",argv[option_arg])){
             //check number of arguments
-            if(argc>1){
+            if((argc-option_arg)>0){
                 printf("Error : too many arguments\r\n");
                 return 1;
             }
             // Turn on push to talk
-            ptt_set(PTT_ON);
-        }else if(!strcmp("off",argv[1])){
+            ptt_set(num,PTT_ON);
+        }else if(!strcmp("off",argv[option_arg])){
             //check number of arguments
-            if(argc>1){
+            if((argc-option_arg)>0){
                 printf("Error : too many arguments\r\n");
                 return 1;
             }
             // Turn off push to talk
-            ptt_set(PTT_OFF);
-        }else if(!strcmp("delay",argv[1])){
+            ptt_set(num,PTT_OFF);
+        }else if(!strcmp("delay",argv[option_arg]) || !strcmp("Sdelay",argv[option_arg])){
+            //check if we are using PTT signal
+            ptt_sig=argv[option_arg][0]=='S'?PTT_USE_SIGNAL:PTT_NO_SIGNAL;
             //check number of arguments
-            if(argc>2){
+            if((argc-option_arg)>1){
                 printf("Error : too many arguments\r\n");
                 return 1;
             }
             //parse delay value
-            delay=strtod(argv[2],&eptr);
+            delay=strtod(argv[option_arg+1],&eptr);
             //check that some chars were parsed
-            if(argv[2]==eptr){
-                printf("Error : could not parse delay value \"%s\"\r\n",argv[2]);
+            if(argv[option_arg+1]==eptr){
+                printf("Error : could not parse delay value \"%s\"\r\n",argv[option_arg+1]);
                 return 3;
             }
-            //check that delay is greater than zero
+            //check that delay is greater than or equal to zero
             if(delay<0){
-                printf("Error : delay of %f is not valid. Valid delays must be greater than zero\r\n",delay);
+                printf("Error : delay of %f is not valid. Valid delays must be greater than or equal to zero\r\n",delay);
                 return 4;
             }
             //start delay count down
-            delay=ptt_on_delay(delay);
+            delay=ptt_on_delay(num,delay,ptt_sig);
             //print out actual delay
             printf("PTT in %f sec\r\n",delay);
+        }else if(!strcmp("state",argv[option_arg])){
+            //check number of arguments
+            if((argc-option_arg)>0){
+                printf("Error : too many arguments\r\n");
+                return 5;
+            }
+            //get ptt state
+            state=ptt_get_state();
+            switch(state)
+            {
+            case PTT_STATE_IDLE:
+                state_str="Idle";
+                break;
+            case PTT_STATE_SIG_WAIT:
+                state_str="Signal Wait";
+                break;
+            case PTT_STATE_DELAY:
+                state_str="Delay";
+                break;
+            default:
+                state_str="Internal Error";
+                break;
+            }
+            printf("PTT state : \"%s\"\r\n",state_str);
         }else{
             //error
-            printf("Error : Unknown state \"%s\"\r\n",argv[1]);
+            printf("Error : Unknown state \"%s\"\r\n",argv[option_arg]);
             return 2;
         }
     }
@@ -71,13 +129,14 @@ int ptt_Cmd(int argc,char *argv[]){
 
 int devtype_Cmd(int argc,char *argv[]){
     // Print device type, use a fixed version number for now
-    printf("MCV radio interface v0.1\r\n");
+    printf("MCV radio interface v1.0\r\n");
     return 0;
 }
 
 const struct{
     int port,pin;
-}leds[2]={{GPIO_PORT_P1,GPIO_PIN0},{GPIO_PORT_P4,GPIO_PIN7}};
+}leds[2]        ={{GPIO_PORT_P1,GPIO_PIN0},{GPIO_PORT_P4,GPIO_PIN7}},
+shadow_leds[2]  ={{GPIO_PORT_P3,GPIO_PIN5},{GPIO_PORT_P3,GPIO_PIN6}};
 
 int LED_Cmd(int argc,char *argv[]){
     int LED_num,LED_idx;
@@ -97,9 +156,11 @@ int LED_Cmd(int argc,char *argv[]){
     LED_idx=LED_num-1;
     //parse state
     if(!strcmp("on",argv[2])){
-        GPIO_setOutputHighOnPin(leds[LED_idx].port,leds[LED_idx].pin);
+        GPIO_setOutputHighOnPin(       leds[LED_idx].port,       leds[LED_idx].pin);
+        GPIO_setOutputHighOnPin(shadow_leds[LED_idx].port,shadow_leds[LED_idx].pin);
     }else if(!strcmp("off",argv[2])){
-        GPIO_setOutputLowOnPin(leds[LED_idx].port,leds[LED_idx].pin);
+        GPIO_setOutputLowOnPin(       leds[LED_idx].port,       leds[LED_idx].pin);
+        GPIO_setOutputLowOnPin(shadow_leds[LED_idx].port,shadow_leds[LED_idx].pin);
     }else{
         //invalid state
         printf("Error : invalid state \"%s\"\r\n",argv[2]);
@@ -110,12 +171,16 @@ int LED_Cmd(int argc,char *argv[]){
 
 int closeout_Cmd(int argc,char *argv[]){
     int i;
-    //turn off ptt
-    ptt_set(PTT_OFF);
+    //loop through all PTT's
+    for(i=0;i<NUM_PTT;i++){
+        //turn off ptt
+        ptt_set(i,PTT_OFF);
+    }
     //loop through all LED's
     for(i=0;i<sizeof(leds)/sizeof(leds[0]);i++){
         //turn off LED
-        GPIO_setOutputLowOnPin(leds[i].port,leds[i].pin);
+        GPIO_setOutputLowOnPin(       leds[i].port,       leds[i].pin);
+        GPIO_setOutputLowOnPin(shadow_leds[i].port,shadow_leds[i].pin);
     }
     return 0;
 }
@@ -126,7 +191,7 @@ void ADCinit(void){
     unsigned int cal_30c,cal_85c;
     //disable ADC
     ADC12CTL0&=~ADC12ENC;
-    //setup REF for always on
+    //setup REF for always on 1.5V
     REFCTL0=REFMSTR|REFOUT|REFON;
     //setup ADC
     //NOTE : 8 clocks can be used for sample and hold time if only thermistor is used (5k ohm eq series resistance)

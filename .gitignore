@@ -4,3 +4,6 @@ Release/
 .xdchelp
 .config/
 .launches/
+
+#ignore Matlab save files
+*.asv
