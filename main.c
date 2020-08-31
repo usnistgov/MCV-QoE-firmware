@@ -73,7 +73,14 @@ void main (void)
     char pieceOfString[MAX_STR_LENGTH] = "";
     int hasInit=0;
 
-    WDT_A_hold(WDT_A_BASE); // Stop watchdog timer
+    //enable LF xtal function
+    P5SEL|=BIT4|BIT5;
+
+    // Stop watchdog timer
+    WDT_A_hold(WDT_A_BASE);
+
+    //turn on low frequency crystal. internal load caps not needed
+    UCS_turnOnLFXT1(UCS_XT1_DRIVE_3,UCS_XCAP_0);
 
     // Minumum Vcore setting required for the USB API is PMM_CORE_LEVEL_2 .
     PMM_setVCore(PMM_CORE_LEVEL_3);
