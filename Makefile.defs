@@ -1,0 +1,9 @@
+
+
+BUILD_VERSION := $(shell git describe --dirty=-dty --broken=-broken --always --match=v*.* )
+
+ifeq ($(BUILD_VERSION),)
+	BUILD_VERSION := "invalid-version"
+endif
+
+GEN_OPTS__FLAG += --define=VERSION_STR="\"$(BUILD_VERSION)\""

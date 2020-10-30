@@ -129,7 +129,7 @@ int ptt_Cmd(int argc,char *argv[]){
 
 int devtype_Cmd(int argc,char *argv[]){
     // Print device type, use a fixed version number for now
-    printf("MCV radio interface v1.0\r\n");
+    printf("MCV radio interface : "VERSION_STR"\r\n");
     return 0;
 }
 
