@@ -294,6 +294,17 @@ int temp_Cmd(int argc,char *argv[]){
     return 0;
 }
 
+int id_Cmd(int argc,char *argv[])
+{
+    uint8_t len;
+    struct s_TLV_Die_Record *record;
+    //get pointer to die record
+    TLV_getInfo(TLV_TAG_DIERECORD,0,&len,(uint16_t**)&record);
+    //print out die record
+    printf("%08lX%04X%04X\r\n",record->wafer_id,record->die_x_position,record->die_y_position);
+    return 0;
+}
+
 //table of commands with help
 const CMD_SPEC cmd_tbl[]={{"help"," [command]\r\n\t""get a list of commands or help on a spesific command.",helpCmd},
                           {"ptt"," state\r\n\t""change the push to talk state of the radio",ptt_Cmd},
@@ -302,5 +313,6 @@ const CMD_SPEC cmd_tbl[]={{"help"," [command]\r\n\t""get a list of commands or h
                           {"closeout","\r\n\tTurn off ptt and all LED's",closeout_Cmd},
                           {"analog","ch1 [ch2] ... [chn]\r\n\tRead analog values",analog_Cmd},
                           {"temp","\r\n\tRead temperature sensors",temp_Cmd},
+                          {"id","\r\n\tPrint a unique ID (in hex) for this processor",id_Cmd},
                           //end of list
                           {NULL,NULL,NULL}};
