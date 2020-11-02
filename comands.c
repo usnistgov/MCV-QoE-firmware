@@ -15,6 +15,10 @@
 
 #include "USBprintf.h"
 
+
+#include "USB_config/descriptors.h"
+#include "USB_API/USB_CDC_API/UsbCdc.h"
+
 int ptt_Cmd(int argc,char *argv[]){
     float delay;
     char *eptr;
@@ -305,6 +309,19 @@ int id_Cmd(int argc,char *argv[])
     return 0;
 }
 
+int bsl_Cmd(int argc,char *argv[])
+{
+    const char *str="The BSL command is used for firmware upgrade, commandline will be unavailable. Good Bye!\r\n";
+
+    USBCDC_sendData((uint8_t*)str,strlen(str),CDC0_INTFNUM);
+    //Disable interrups for BSL entry
+    __disable_interrupt();
+    //call BSL code
+    ((void (*)())0x1000)();
+    //This statement shouldn't be reached
+    return 0;
+}
+
 //table of commands with help
 const CMD_SPEC cmd_tbl[]={{"help"," [command]\r\n\t""get a list of commands or help on a spesific command.",helpCmd},
                           {"ptt"," state\r\n\t""change the push to talk state of the radio",ptt_Cmd},
@@ -314,5 +331,6 @@ const CMD_SPEC cmd_tbl[]={{"help"," [command]\r\n\t""get a list of commands or h
                           {"analog","ch1 [ch2] ... [chn]\r\n\tRead analog values",analog_Cmd},
                           {"temp","\r\n\tRead temperature sensors",temp_Cmd},
                           {"id","\r\n\tPrint a unique ID (in hex) for this processor",id_Cmd},
+                          {"bsl","\r\n\tenter boot strap loader code (for loading firmware)",bsl_Cmd},
                           //end of list
                           {NULL,NULL,NULL}};
