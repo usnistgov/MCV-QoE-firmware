@@ -1,7 +1,10 @@
-
 # Radio Interface Firmware #
 
 This Repository is for the microcontroller utilized in the PSCR MCV QoE measurement system. This code is utilized by the measurement systems described in [NIST IR 8206](https://doi.org/10.6028/NIST.IR.8206) and [NIST IR 8275](https://doi.org/10.6028/NIST.IR.8275). The code is written for the TI MSP430F5529 processor and was developed using a MSP-EXP430F5529LP LaunchPad board.
+
+The following projects require the use of this firmware:
+- https://github.com/usnistgov/mouth2ear
+- https://github.com/usnistgov/accessTime
 
 The code was compiled and loaded using TI Code Composer Studio (CCS) IDE, available here: http://www.ti.com/tool/CCSTUDIO.
 
@@ -23,6 +26,8 @@ The command line interface implemented by the software is primarily intended to 
 - **LED**: The LED command will turn on or off one of the LEDs on the board.
 - **closeout**: The closeout command is primarily meant to be called when the radioInterface class is deleted. It deactivates the ptt signal and turns off all of the LEDs. It takes no arguments.
 - **temp**: The temp command is used to measure both the MSP430 temperature and an optional external thermistor. The thermistor connects to analog channel 5 on P6.5. The code was used with a Cantherm MF52A2103J3470 thermistor as the bottom leg (connected to ground) of a voltage divider with the other resistor, connected to 3.3V, being a 10 k ohm. The internal temperature measures the die temperature of the MSP430 which is generally a bit higher than ambient due to the internal voltage regulator.
+- **id**: The id command is used to get a unique ID for each board. The die record is used to return a hex string that is unique to each IC.
+- **bsl**: The bsl command puts the processor in bootstrap loader mode. In bsl mode the virtual COM port will no longer be available and a USB HID device for the bsl will instead be used. The only way to return to the command line interface is to reset the processor. This intended for use with a possible future firmware upgrade tool.
 
 ## Supplies List ##
 
