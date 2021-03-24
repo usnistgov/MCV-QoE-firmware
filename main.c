@@ -73,6 +73,8 @@ void main (void)
     char pieceOfString[MAX_STR_LENGTH] = "";
     int hasInit=0;
 
+    USBHAL_initPorts();           // Config GPIOS for low-power (output low)
+
     //enable LF xtal function
     P5SEL|=BIT4|BIT5;
 
@@ -84,7 +86,6 @@ void main (void)
 
     // Minumum Vcore setting required for the USB API is PMM_CORE_LEVEL_2 .
     PMM_setVCore(PMM_CORE_LEVEL_3);
-    USBHAL_initPorts();           // Config GPIOS for low-power (output low)
     USBHAL_initClocks(25000000);   // Config clocks. MCLK=SMCLK=FLL=8MHz; ACLK=REFO=32kHz
     USB_setup(TRUE, TRUE); // Init USB & events; if a host is present, connect
     terminal_init(&term_dat);
