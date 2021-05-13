@@ -207,6 +207,8 @@
 								<option id="com.ti.ccstudio.buildDefinitions.MSP430_20.2.hex.ROMWIDTH.897918840" name="Specify rom width (--romwidth, -romwidth=width)" superClass="com.ti.ccstudio.buildDefinitions.MSP430_20.2.hex.ROMWIDTH" value="8" valueType="string"/>
 								<option id="com.ti.ccstudio.buildDefinitions.MSP430_20.2.hex.MEMWIDTH.1979427377" name="Specify memory width (--memwidth, -memwidth=width)" superClass="com.ti.ccstudio.buildDefinitions.MSP430_20.2.hex.MEMWIDTH" value="8" valueType="string"/>
 								<option id="com.ti.ccstudio.buildDefinitions.MSP430_20.2.hex.TOOL_ENABLE.1107070428" name="Enable tool" superClass="com.ti.ccstudio.buildDefinitions.MSP430_20.2.hex.TOOL_ENABLE" value="true" valueType="boolean"/>
+								<option id="com.ti.ccstudio.buildDefinitions.MSP430_20.2.hex.OUTPUT_FORMAT.1779331110" name="Output format" superClass="com.ti.ccstudio.buildDefinitions.MSP430_20.2.hex.OUTPUT_FORMAT" value="com.ti.ccstudio.buildDefinitions.MSP430_20.2.hex.OUTPUT_FORMAT.TI_TXT" valueType="enumerated"/>
+								<option id="com.ti.ccstudio.buildDefinitions.MSP430_20.2.hex.IMAGE.772021381" name="Select image mode (--image, -image)" superClass="com.ti.ccstudio.buildDefinitions.MSP430_20.2.hex.IMAGE" value="false" valueType="boolean"/>
 							</tool>
 						</toolChain>
 					</folderInfo>
