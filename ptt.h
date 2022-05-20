@@ -10,7 +10,7 @@
 
 enum PTT_ACTION {PTT_ON,PTT_OFF,PTT_TOGGLE};
 
-enum PTT_OUTPUTS {PTT_PIN1,PTT_PIN2,NUM_PTT};
+enum PTT_OUTPUTS {PTT_PIN1,PTT_PIN2,PTT_PIN3,NUM_PTT}; // JODELL #1 add PTT_PIN3 in order for init. entires not to be ignored
 
 enum PTT_STATUS {PTT_INVALID=-1,PTT_HIGH=1,PTT_LOW=0};
 
