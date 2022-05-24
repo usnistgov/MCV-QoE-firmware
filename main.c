@@ -60,7 +60,7 @@ volatile uint8_t bCDCDataReceived_event = FALSE; // Indicates data has been rx'e
 char wholeString[MAX_STR_LENGTH] = ""; // Entire input str from last 'return'
 
 //init function for ADC
-void ADCinit(void);
+//void ADCinit(void);//MSP430F5519 does not have an ADC (QoE Rev 3)
 
 /*  
  * ======== main ========
@@ -89,7 +89,7 @@ void main (void)
     USBHAL_initClocks(25000000);   // Config clocks. MCLK=SMCLK=FLL=8MHz; ACLK=REFO=32kHz
     USB_setup(TRUE, TRUE); // Init USB & events; if a host is present, connect
     terminal_init(&term_dat);
-    ADCinit();
+    //ADCinit();//MSP430F5519 does not have an ADC (QoE Rev 3)
     Buttons_init();
     PTT_init();
 
@@ -138,9 +138,10 @@ void main (void)
             case ST_PHYS_DISCONNECTED:
             case ST_ENUM_SUSPENDED:
             case ST_PHYS_CONNECTED_NOENUM_SUSP:
-            
+            /* JODELL Using P1.0 on Rev 3.0 as !PTT so... dont turn this off!
                 //Turn off LED P1.0
                 GPIO_setOutputLowOnPin(LED_PORT, LED_PIN);
+            */
                 __bis_SR_register(LPM3_bits + GIE);
                 _NOP();
                 break;

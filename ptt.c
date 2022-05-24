@@ -10,10 +10,10 @@
 #include <math.h>
 
 //base address of ports to use for PTT
-volatile unsigned char *(ptt_port_base[NUM_PTT])={&P8IN,&P8IN,&P2IN}; //JODELL #2 add !PTT port def
+volatile unsigned char *(ptt_port_base[NUM_PTT])={&P8IN,&P8IN,&P1IN}; //JODELL #2 add !PTT port def
 
 //pin numbers used for PTT
-int ptt_pin[NUM_PTT]={2,1,2};//JODELL #3 add !PTT pin def
+int ptt_pin[NUM_PTT]={2,1,0};//JODELL #3 add !PTT pin def
 
 enum PTT_STATE PTT_state=PTT_STATE_IDLE;
 
@@ -33,7 +33,7 @@ void PTT_init(void){
         ptt_port_base[i][OFFSET_DIR]|= (1<<ptt_pin[i]);
     }
 
-    ptt_port_base[2][OFFSET_OUT] |= (1<<ptt_pin[2]);//JODELL #4 create !PTT sig
+    ptt_set(2, PTT_OFF); //JODELL #4 command !PTT sig starting possition
 
     //Setup ptt tone pin
 
@@ -108,14 +108,15 @@ void ptt_set(int num,int action){
         case PTT_ON:
             //set pin high
             ptt_port_base[num][OFFSET_OUT]|= (1<<ptt_pin[num]);
-            ptt_port_base[2][OFFSET_OUT]&= ~(1<<ptt_pin[2]);// JODELL #5a glue !ptt to trigger on any ptt
+            ptt_port_base[2][OFFSET_OUT]&= ~(1<<ptt_pin[2]);// JODELL #5a glue !ptt to fall low given PTT_ON state
+
             //start ptt tone
             ptt_tone_start();
             break;
         case PTT_OFF:
             //set ptt pin low
             ptt_port_base[num][OFFSET_OUT]&=~(1<<ptt_pin[num]);
-            ptt_port_base[2][OFFSET_OUT]|=(1<<ptt_pin[2]);// JODELL #5b
+            ptt_port_base[2][OFFSET_OUT]|=(1<<ptt_pin[2]);// JODELL #5b glue !ptt to go high given PTT_OFF state
             //stop ptt tone
             ptt_tone_stop();
             break;

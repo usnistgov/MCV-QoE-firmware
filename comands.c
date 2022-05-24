@@ -191,6 +191,7 @@ int closeout_Cmd(int argc,char *argv[]){
 
 float ADC_temp_scl,ADC_temp_offset;
 
+/*
 void ADCinit(void){
     unsigned int cal_30c,cal_85c;
     //disable ADC
@@ -297,6 +298,7 @@ int temp_Cmd(int argc,char *argv[]){
     printf("int = %f C\r\next = %u\r\n",Tint,raw[1]);
     return 0;
 }
+*/
 
 int id_Cmd(int argc,char *argv[])
 {
@@ -328,8 +330,8 @@ const CMD_SPEC cmd_tbl[]={{"help"," [command]\r\n\t""get a list of commands or h
                           {"devtype","\r\n\t""get the device type string",devtype_Cmd},
                           {"LED","number state\r\n\t""set the LED status",LED_Cmd},
                           {"closeout","\r\n\tTurn off ptt and all LED's",closeout_Cmd},
-                          {"analog","ch1 [ch2] ... [chn]\r\n\tRead analog values",analog_Cmd},
-                          {"temp","\r\n\tRead temperature sensors",temp_Cmd},
+                          //{"analog","ch1 [ch2] ... [chn]\r\n\tRead analog values",analog_Cmd},
+                          //{"temp","\r\n\tRead temperature sensors",temp_Cmd},
                           {"id","\r\n\tPrint a unique ID (in hex) for this processor",id_Cmd},
                           {"bsl","\r\n\tenter boot strap loader code (for loading firmware)",bsl_Cmd},
                           //end of list
